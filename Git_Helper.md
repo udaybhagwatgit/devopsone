@@ -1,0 +1,144 @@
+Hi Guys,  I’ve noticed that many of you issue pull requests directly from your forks (origin) master branch, which many times indicates that either you’re making your local feature changes directly into master or you’ve merged your feature changes into your master prematurely (because the changes in the pull request haven’t been merged into upstream).  This usually works well if no one else is touching your files.  But if you ever encounter the situation where there are two pull requests in the queue where each one changes the same file in conflicting ways, it gets difficult to resolve those conflicts.  First your forks master branch has strayed away  from upstream and the conflicts you want to resolve are coming in from upstream into local master branch.  Both sides of your development loop are out to get you!!!, no pulls and no pushes, not a lot of room to move.
+ 
+Well, today is your lucky day, there are some changes you can make to your workflow that should help a lot when encountering conflicts.
+ 
+1) lets start with the first thing you should do prior to working on the feature.
+Follow the git fork setup (this sets up two git-remotes, origin and upstream – I reference those often in the commands) 
+ 
+https://help.github.com/enterprise/2.2/user/articles/fork-a-repo/
+ 
+2) In your local git repo, within gitbash (hopefully you have that) - https://git-for-windows.github.io/
+ 
+	$ cd <git-repo>
+ 
+	$ git checkout –b <feature>
+ 
+This creates a new branch called <feature> and switches to it.  this is useful, because all your future commits will already be stashed. 
+ 
+3) Now you make some changes to the code for your feature with your favorite editor.  Remember to commit frequently, and do keep your commits focused.  Resist changing things as you see them (the dark side), instead make a note to come back to that.  This makes commit messages short, descriptive and to the point and try to make your messages descriptive too. 
+ 
+4) before you commit check the files git thinks have changed
+ 
+                $ git status [-u]
+ 
+With git status and optionally the –u option you can see which changes git is aware of,  git status –u shows “untracked” files, so if you’ve added a new file that you want to commit it will show up there.
+If you see other files that shouldn’t be committed and you want git to ignore them you can add them to the .gitignore file at the top of that repo. 
+ 
+                $ git diff [--cached]
+ 
+This shows a unified difference of the files git is tracking and the files you’ve changed.  It’s a good way to remind yourself of what your git message should say.  Note that a commit message should only be about 40 chars, so if you’re rambling on too much about all that has changed in a single commit you might want to reconsider the next time resisting the dark side (see step 3) 
+The –cached option is useful to see changes in files that are staged for committing.
+ 
+5)  now you know what you’re going to say and how you’re going to say it, you’re ready to stage the files for committing. 
+ 
+                $ git add <file>
+ 
+Git add is the best way and most controlled way of staging the files.  There are other shorter ways of adding files, but that usually leads to commiting unrelated changes to the commit message.
+Add as many files as you can this way.  (eclipse gives you this option, and it also gives you the short cut,  resist the dark side J.)  if you check git status again you’ll see some files in green those are staged.
+ 
+6) committing is easy now. 
+ 
+                $ git commit –m “awesome message in less than 40 chars”
+ 
+Note that the message is about 40 chars, that’s the goal.  10 is too little and 80 makes git unhappy and it will try to use the ellipsis…
+ 
+7.0) ok so now you’ve commited all your cool changes that show each step in your “red,green,refactor” loop, and your still in your feature branch ($ git branch)
+You switch back to master and check to see if there are any changes in upstream that affect your brand new code!!
+ 
+                $ git checkout master
+                $ git fetch upstream && git merge upstream/master
+ 
+7.0.1) you must also make sure origin/master has those updates
+                $ git push –u origin master
+ 
+Oh no there are changes!! You must now figure out if you can rebase your feature branch to the tip of master
+ 
+                $ git checkout <feature>
+                $ git rebase master
+ 
+This should tell you that its rewinding your branch commits back to a common point where it matched master, then it will apply the changes to master, and then it will try to apply your branch changes,  this is where you may find a conflict.  It will tell you if there  is a conflict.   
+ 
+Oh no there is a conflict.   Now you edit the files and you’ll find “>>>” which is a marker where there is a conflict. And will contain the master branch code and your code.  You must pick the code you want, which is a happy compromise of the two sets.
+ 
+Then you add the conflicting files and you should be able to continue rebasing. J 
+ 
+                $ git add <conficting-file>
+                $ git rebase --continue 
+ 
+Note that you haven’t made any changes to master yet. 
+ 
+7.1) While in the feature branch, and on the current tip of upstreams master branch, you swiftly move for a pull request.
+ 
+                $ git push –u origin <feature> 
+ 
+Here we’re pushing the feature branch out to the forked repo in github referred to by the origin remote name, and to a remote branch called feature!.  If everything goes well go to step 8.0, else continue
+ 
+7.2)
+                Sometimes when you’re pushing to origins <feature> branch, the conflict resolution has to be _resolved_ again.  This is due to the compromises you made during rebasing as you included changes that came in from upstream/master and thus cause a conflict in origin J 
+                Git will let you know that there are differences it can resolve on its own and your push may be “rejected”!! git will also tell you to “git pull …” that’s good. It know what you need to do.   From your feature branch
+ 
+                $ git pull
+ 
+                This will pull in the branch you had, and it will, similarly to the rebase out when there is a conflict, kindly let you know that it failed to merge.  Use git status to see which files are conflicting.
+ 
+                $ git status 
+ 
+                Then edit the files that are “unmerged” and resolve the conflicts. (NOTE: the conflicts will look very similar to the conflicts you just resolved with git rebase, that’s normal).  Once the conflict is resolve you can add those files to stage them for merging.
+ 
+                $ git add <files>
+ 
+                At this point there is a slight difference with what you do with rebase.  Here you must commit one more time, typically you state that you’re resolving conflicts.  By stating which upstream changes you’re meshing into your code.
+                
+                $ git commit –m “merging change x from <somebody’s> feature work”
+ 
+                NOW! You’re back to trying to push to origin again.  Go back to step 7.1,
+ 
+8.0 ) You open your browser navigate to your github forked repo,  you switch to the branch you just pushed to and you issue a pull request.
+ 
+GAH!!,  ALAS there is another pull request sitting there in the pull request queue that might get reviewed and merged before yours!! and it conflicts with your pull request!! 
+ 
+Not a problem.  You can go back to step 7.0 to update from upstream, and rebase your feature branch, push to origin again, and your pull request is back in business.
+ 
+Creating the feature branches should make your flow more fluid.  And it lets you work on multiple features at the same time too, if you’re good at rebasing.
+ 
+ 
+Eclipse offers a way to issue git commands on the repo.  But I prefer using the command line (a personal preference), I feel like I have more control over what happens and I can blame my fingers at least when something goes wrong.  Also I like the feedback the command line gives me over what eclipse provides.
+ 
+ 
+Thanks for reading J
+ 
+Carlos J Torres, Principal Developer 
+
+T   (914) 409 2529  Remote, NY epsilon.com
+
+
+ 
+ 
+ 
+P.S.
+ 
+I use a couple of git aliases in my ~/.gitconfig file.  Most of these aliases deal with the master branch but they show the kinds of things you can do. 
+Like “$ git pur 65” will create a branch called pr-65 AND fetch pull request 65 from upstream into it. This makes reviewing a pull request in your environment of choice pretty comfortable.
+“$ git branch –D pr-65” will delete it once you’re done looking at it.
+ 
+[alias]
+    st = status
+    co = checkout
+    pom = push -u origin master
+    up = !git fetch upstream && git merge upstream/master
+    op = !git fetch origin && git merge origin/master
+    pr = "!f() { git fetch origin pull/$1/head:pr-$1 && git checkout pr-$1; }; f"
+    pur = "!f() { git fetch upstream pull/$1/head:pr-$1 && git checkout pr-$1; }; f"
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+To get back a Deleted File that is not yet committed - 
+
+git reset HEAD <filename>
+git checkout -- <filename>
+
+
+Adding SSH Key - 
+
+https://www.youtube.com/watch?v=H5qNpRGB7Qw
