@@ -1,3 +1,5 @@
+SUGGESTED BY A MENTOR!
+
 Hi Guys,  I’ve noticed that many of you issue pull requests directly from your forks (origin) master branch, which many times indicates that either you’re making your local feature changes directly into master or you’ve merged your feature changes into your master prematurely (because the changes in the pull request haven’t been merged into upstream).  This usually works well if no one else is touching your files.  But if you ever encounter the situation where there are two pull requests in the queue where each one changes the same file in conflicting ways, it gets difficult to resolve those conflicts.  First your forks master branch has strayed away  from upstream and the conflicts you want to resolve are coming in from upstream into local master branch.  Both sides of your development loop are out to get you!!!, no pulls and no pushes, not a lot of room to move.
  
 Well, today is your lucky day, there are some changes you can make to your workflow that should help a lot when encountering conflicts.
@@ -104,13 +106,6 @@ Creating the feature branches should make your flow more fluid.  And it lets yo
  
 Eclipse offers a way to issue git commands on the repo.  But I prefer using the command line (a personal preference), I feel like I have more control over what happens and I can blame my fingers at least when something goes wrong.  Also I like the feedback the command line gives me over what eclipse provides.
  
- 
-Thanks for reading J
- 
-Carlos J Torres, Principal Developer 
-
-T   (914) 409 2529  Remote, NY epsilon.com
-
 
  
  
