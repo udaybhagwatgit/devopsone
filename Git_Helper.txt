@@ -103,14 +103,6 @@ Creating the feature branches should make your flow more fluid.  And it lets yo
  
  
 Eclipse offers a way to issue git commands on the repo.  But I prefer using the command line (a personal preference), I feel like I have more control over what happens and I can blame my fingers at least when something goes wrong.  Also I like the feedback the command line gives me over what eclipse provides.
- 
- 
-Thanks for reading J
- 
-Carlos J Torres, Principal Developer 
-
-T   (914) 409 2529  Remote, NY epsilon.com
-
 
  
  
